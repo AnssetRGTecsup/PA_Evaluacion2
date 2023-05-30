@@ -1,41 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public KeyCode up;
-    public KeyCode down;
+    
+    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private float speed;
     private Rigidbody2D myRB;
-    [SerializeField]
-    private float speed;
     private float limitSuperior;
     private float limitInferior;
-    public int player_lives = 4;
+
     // Start is called before the first frame update
     void Start()
     {
-        if (up == KeyCode.None) up = KeyCode.UpArrow;
-        if (down == KeyCode.None) down = KeyCode.DownArrow;
         myRB = GetComponent<Rigidbody2D>();
         SetMinMax();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKey(up) && transform.position.y < limitSuperior)
-        {
-            myRB.velocity = new Vector2(0f, speed);
-        }
-        else if (Input.GetKey(down) && transform.position.y > limitInferior)
-        {
-            myRB.velocity = new Vector2(0f, -speed);
-        }
-        else
-        {
-            myRB.velocity = Vector2.zero;
-        }
     }
 
     void SetMinMax()
@@ -49,7 +30,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.tag == "Candy")
         {
-            CandyGenerator.instance.ManageCandy(other.gameObject.GetComponent<CandyController>(), this);
+            CandyGenerator.instance.ManageCandy(other.gameObject.GetComponent<CandyController>(), playerManager);
         }
+
+        if(other.tag == "Enemy"){
+            EnemyGenerator.instance.ManageEnemy(other.gameObject.GetComponent<EnemyController>(), playerManager);
+        }
+    }
+
+    public void OnMovement(InputAction.CallbackContext context){
+        float currentSpeed = speed * context.ReadValue<float>();
+        myRB.velocity = new Vector2(0f, currentSpeed);
     }
 }

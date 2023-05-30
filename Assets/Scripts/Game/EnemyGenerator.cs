@@ -1,13 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class CandyGenerator : MonoBehaviour
+public class EnemyGenerator : MonoBehaviour
 {
-    public static CandyGenerator instance;
+    public static EnemyGenerator instance;
     public GameManager gameManager;
-    public List<GameObject> candies = new List<GameObject>();
+    public List<GameObject> enemies = new List<GameObject>();
     public float time_to_create = 4f;
     private float actual_time = 0f;
     private float limitSuperior;
@@ -34,11 +33,11 @@ public class CandyGenerator : MonoBehaviour
         actual_time += Time.deltaTime;
         if (time_to_create <= actual_time)
         {
-            GameObject candy = Instantiate(candies[Random.Range(0, candies.Count)],
+            GameObject enemy = Instantiate(enemies[Random.Range(0, enemies.Count)],
             new Vector3(transform.position.x, Random.Range(limitInferior, limitSuperior), 0f), Quaternion.identity);
-            candy.GetComponent<Rigidbody2D>().velocity = new Vector2(-2f, 0);
+            enemy.GetComponent<Rigidbody2D>().velocity = new Vector2(-2f, 0);
             actual_time = 0f;
-            actual_candies.Add(candy);
+            actual_candies.Add(enemy);
         }
     }
 
@@ -49,16 +48,17 @@ public class CandyGenerator : MonoBehaviour
         limitSuperior = (bounds.y * 0.9f);
     }
 
-    public void ManageCandy(CandyController candy_script, PlayerManager player_script = null)
+    public void ManageEnemy(EnemyController enemy_script, PlayerManager player_script = null)
     {
         if (player_script == null)
         {
-            Destroy(candy_script.gameObject);
+            Destroy(enemy_script.gameObject);
             return;
         }
 
-        gameManager.ManagePoints(candy_script, player_script);
+        gameManager.ManageLife(enemy_script, player_script);
 
-        Destroy(candy_script.gameObject);
+        Destroy(enemy_script.gameObject);
     }
+
 }
